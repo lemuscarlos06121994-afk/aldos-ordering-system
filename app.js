@@ -1975,24 +1975,23 @@ function buildKitchenTicket() {
 
   return txt;
 }
-
 // ============== SEND TO CLOUDPRNT SERVER ==============
 async function sendToKitchen(ticketText) {
-  // Make sure we have everything
-  if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) return;
+  if (!ticketText || !CLOUDPRNT_ENDPOINT) return;
 
   try {
     const res = await fetch(CLOUDPRNT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        deviceId: PRINTER_DEVICE_ID,
-        content: ticketText
+        // This is what the Node server expects:
+        ticket: ticketText
       })
     });
 
     if (!res.ok) {
-      console.error("CloudPRNT server returned an error:", await res.text());
+      const msg = await res.text().catch(() => "");
+      console.error("CloudPRNT server returned an error:", msg || res.status);
       alert("Error sending order to kitchen printer.");
       return;
     }
@@ -2003,6 +2002,7 @@ async function sendToKitchen(ticketText) {
     alert("Network error sending order to kitchen printer.");
   }
 }
+
 
 // ============== PRINT BUTTON (BROWSER + CLOUDPRNT) ==============
 if (printBtn) {
