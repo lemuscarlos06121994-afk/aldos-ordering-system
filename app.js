@@ -1,10 +1,8 @@
 // =================== CLOUDPRNT CONFIG ===================
-// ⚠️ IMPORTANT:
-// 1) Replace CLOUDPRNT_ENDPOINT with your REAL Render URL (the one you put in the printer, + "/order")
-//    Example: "https://aldos-cloudprnt.onrender.com/cloudprnt/order"
-// 2) Replace PRINTER_DEVICE_ID with the Device ID shown in the printer CloudPRNT status page.
-const CLOUDPRNT_ENDPOINT = "https://aldos-printcore-server-aldos-cloudprnt.onrender.com/cloudprnt/order";
-const PRINTER_DEVICE_ID = "z2q6dwp2hagm";
+const CLOUDPRNT_ENDPOINT =
+  "https://aldos-printcore-server-aldos-cloudprnt-basic-2.onrender.com/submit"; // Render endpoint
+const PRINTER_DEVICE_ID =
+  "z2q6dwp2hagm"; // Replace with the exact ID you see on the printer ticket under "<< Star CloudPRNT >>  ID"
 
 // =================== MENU DATA ===================
 const DATA = [
@@ -213,7 +211,8 @@ const DATA = [
       {
         id: "cs-5",
         name: "SPECIAL CHEESE STEAK",
-        desc: "Steak, American cheese, mushrooms, green peppers, onions, tomato sauce, long roll.",
+        desc:
+          "Steak, American cheese, mushrooms, green peppers, onions, tomato sauce, long roll.",
         price: 11.2
       },
       {
@@ -231,19 +230,22 @@ const DATA = [
       {
         id: "cs-8",
         name: "BUFFALO CHICKEN CHEESE STEAK",
-        desc: "Chicken steak, American cheese, blue cheese, hot sauce, long roll.",
+        desc:
+          "Chicken steak, American cheese, blue cheese, hot sauce, long roll.",
         price: 10.6
       },
       {
         id: "cs-9",
         name: "CHICKEN CHEESE STEAK HOAGIE",
-        desc: "Chicken steak, American cheese, lettuce, tomatoes, onions, long roll.",
+        desc:
+          "Chicken steak, American cheese, lettuce, tomatoes, onions, long roll.",
         price: 10.6
       },
       {
         id: "cs-10",
         name: "SPECIAL CHICKEN CHEESE STEAK",
-        desc: "Chicken steak, American cheese, mushrooms, green peppers, onions, tomato sauce, long roll.",
+        desc:
+          "Chicken steak, American cheese, mushrooms, green peppers, onions, tomato sauce, long roll.",
         price: 10.6
       }
     ]
@@ -269,7 +271,8 @@ const DATA = [
       {
         id: "hg-3",
         name: "AMERICAN HOAGIE",
-        desc: "Ham, salami, American cheese, lettuce, tomato, onion, long roll.",
+        desc:
+          "Ham, salami, American cheese, lettuce, tomato, onion, long roll.",
         price: 9.25
       },
       {
@@ -287,13 +290,15 @@ const DATA = [
       {
         id: "hg-6",
         name: "CHICKEN PARMIGIANA",
-        desc: "Tomato sauce, Romano cheese & mozzarella cheese, long roll.",
+        desc:
+          "Tomato sauce, Romano cheese & mozzarella cheese, long roll.",
         price: 10.3
       },
       {
         id: "hg-7",
         name: "MEATBALL PARMIGIANA",
-        desc: "Tomato sauce, Romano cheese & mozzarella cheese, long roll.",
+        desc:
+          "Tomato sauce, Romano cheese & mozzarella cheese, long roll.",
         price: 10.3
       }
     ]
@@ -307,25 +312,29 @@ const DATA = [
       {
         id: "wp-1",
         name: "CHEESE STEAK WRAP",
-        desc: "Steak, American cheese, lettuce, tomato, onions, choice of dressing. With fries.",
+        desc:
+          "Steak, American cheese, lettuce, tomato, onions, choice of dressing. With fries.",
         price: 11.2
       },
       {
         id: "wp-2",
         name: "BUFFALO GRILLED CHICKEN WRAP",
-        desc: "Grilled chicken, hot sauce, blue cheese, lettuce, tomato, with fries.",
+        desc:
+          "Grilled chicken, hot sauce, blue cheese, lettuce, tomato, with fries.",
         price: 11.2
       },
       {
         id: "wp-3",
         name: "GRILLED CHICKEN CAESAR WRAP",
-        desc: "Grilled chicken, Parmesan cheese, romaine lettuce, croutons, with fries.",
+        desc:
+          "Grilled chicken, Parmesan cheese, romaine lettuce, croutons, with fries.",
         price: 11.2
       },
       {
         id: "wp-4",
         name: "CHICKEN PARMIGIANA WRAP",
-        desc: "Breaded chicken breast, tomato sauce, mozzarella cheese, with fries.",
+        desc:
+          "Breaded chicken breast, tomato sauce, mozzarella cheese, with fries.",
         price: 11.2
       },
       {
@@ -337,7 +346,8 @@ const DATA = [
       {
         id: "wp-6",
         name: "CRISPY CHICKEN WRAP",
-        desc: "Crispy chicken, lettuce, tomato, American cheese, choice of dressing, with fries.",
+        desc:
+          "Crispy chicken, lettuce, tomato, American cheese, choice of dressing, with fries.",
         price: 11.2
       }
     ]
@@ -357,31 +367,36 @@ const DATA = [
       {
         id: "bg-2",
         name: "CHEESEBURGER",
-        desc: "6oz meat on a round Kaiser roll, American cheese, with fries.",
+        desc:
+          "6oz meat on a round Kaiser roll, American cheese, with fries.",
         price: 10.6
       },
       {
         id: "bg-3",
         name: "PIZZA BURGER",
-        desc: "6oz meat on a round Kaiser roll, tomato sauce, mozzarella cheese, with fries.",
+        desc:
+          "6oz meat on a round Kaiser roll, tomato sauce, mozzarella cheese, with fries.",
         price: 10.6
       },
       {
         id: "bg-4",
         name: "CALIFORNIA BURGER",
-        desc: "6oz meat on a round Kaiser roll, American cheese, lettuce, tomatoes, onions, mayo & ketchup, with fries.",
+        desc:
+          "6oz meat on a round Kaiser roll, American cheese, lettuce, tomatoes, onions, mayo & ketchup, with fries.",
         price: 11.2
       },
       {
         id: "bg-5",
         name: "BACON BURGER",
-        desc: "6oz meat on a round Kaiser roll, bacon, American cheese, with fries.",
+        desc:
+          "6oz meat on a round Kaiser roll, bacon, American cheese, with fries.",
         price: 11.2
       },
       {
         id: "bg-6",
         name: "TEXAS BURGER",
-        desc: "6oz meat on a round Kaiser roll, American cheese, lettuce, tomatoes, fried onions, fried mushrooms, mayo, with fries.",
+        desc:
+          "6oz meat on a round Kaiser roll, American cheese, lettuce, tomatoes, fried onions, fried mushrooms, mayo, with fries.",
         price: 11.45
       }
     ]
@@ -460,7 +475,8 @@ const DATA = [
       {
         id: "sl-3",
         name: "ANTIPASTO SALAD",
-        desc: "Ham, salami, provolone cheese, lettuce, tomato, cucumber. Small or large.",
+        desc:
+          "Ham, salami, provolone cheese, lettuce, tomato, cucumber. Small or large.",
         price: 12.0,
         sizes: { small: 9.15, large: 12.0 },
         isSalad: true
@@ -468,7 +484,8 @@ const DATA = [
       {
         id: "sl-4",
         name: "CHEF SALAD",
-        desc: "Ham, turkey, provolone cheese, lettuce, tomato, cucumber. Small or large.",
+        desc:
+          "Ham, turkey, provolone cheese, lettuce, tomato, cucumber. Small or large.",
         price: 12.0,
         sizes: { small: 9.15, large: 12.0 },
         isSalad: true
@@ -476,7 +493,8 @@ const DATA = [
       {
         id: "sl-5",
         name: "TURKEY & CHEESE SALAD",
-        desc: "Turkey, provolone cheese, lettuce, tomato, cucumber. Small or large.",
+        desc:
+          "Turkey, provolone cheese, lettuce, tomato, cucumber. Small or large.",
         price: 12.0,
         sizes: { small: 9.15, large: 12.0 },
         isSalad: true
@@ -484,7 +502,8 @@ const DATA = [
       {
         id: "sl-6",
         name: "TUNA SALAD",
-        desc: "Water tuna tossed with mayonnaise, lettuce, tomato, cucumber. Small or large.",
+        desc:
+          "Water tuna tossed with mayonnaise, lettuce, tomato, cucumber. Small or large.",
         price: 12.0,
         sizes: { small: 9.15, large: 12.0 },
         isSalad: true
@@ -516,19 +535,22 @@ const DATA = [
       {
         id: "pa-1",
         name: "CHICKEN PARMIGIANA",
-        desc: "Mozzarella cheese & tomato sauce. Served with soup or salad & bread.",
+        desc:
+          "Mozzarella cheese & tomato sauce. Served with soup or salad & bread.",
         price: 18.3
       },
       {
         id: "pa-2",
         name: "CHICKEN FRANCAISE",
-        desc: "Lemon white wine sauce. Served with soup or salad & bread.",
+        desc:
+          "Lemon white wine sauce. Served with soup or salad & bread.",
         price: 19.85
       },
       {
         id: "pa-3",
         name: "CHICKEN MARSALA",
-        desc: "Mushrooms, Marsala wine sauce. Served with soup or salad & bread.",
+        desc:
+          "Mushrooms, Marsala wine sauce. Served with soup or salad & bread.",
         price: 19.85
       },
       {
@@ -540,13 +562,15 @@ const DATA = [
       {
         id: "pa-5",
         name: "PASTA VODKA SAUCE WITH CHICKEN",
-        desc: "Chicken, vodka pink sauce, served with soup or salad & bread.",
+        desc:
+          "Chicken, vodka pink sauce, served with soup or salad & bread.",
         price: 19.85
       },
       {
         id: "pa-6",
         name: "PASTA VODKA SAUCE WITH SHRIMP",
-        desc: "Shrimp, vodka pink sauce, served with soup or salad & bread.",
+        desc:
+          "Shrimp, vodka pink sauce, served with soup or salad & bread.",
         price: 24.85
       },
       {
@@ -558,13 +582,15 @@ const DATA = [
       {
         id: "pa-8",
         name: "PASTA ALFREDO SAUCE WITH CHICKEN",
-        desc: "Chicken, Alfredo sauce, served with soup or salad & bread.",
+        desc:
+          "Chicken, Alfredo sauce, served with soup or salad & bread.",
         price: 19.85
       },
       {
         id: "pa-9",
         name: "PASTA ALFREDO SAUCE WITH SHRIMP",
-        desc: "Shrimp, Alfredo sauce, served with soup or salad & bread.",
+        desc:
+          "Shrimp, Alfredo sauce, served with soup or salad & bread.",
         price: 24.85
       },
       {
@@ -576,13 +602,15 @@ const DATA = [
       {
         id: "pa-11",
         name: "PASTA WITH TOMATO SAUCE & MEATBALLS",
-        desc: "Meatballs, tomato sauce, served with soup or salad & bread.",
+        desc:
+          "Meatballs, tomato sauce, served with soup or salad & bread.",
         price: 19.85
       },
       {
         id: "pa-12",
         name: "PASTA WITH TOMATO SAUCE & SAUSAGE",
-        desc: "Sausage, tomato sauce, served with soup or salad & bread.",
+        desc:
+          "Sausage, tomato sauce, served with soup or salad & bread.",
         price: 19.85
       },
       {
@@ -925,12 +953,16 @@ if (qInput) {
 }
 
 // ============== CART HELPERS ==============
-function addToCart(baseId, noteText = "", extraPrice = 0, basePriceOverride = null) {
+function addToCart(
+  baseId,
+  noteText = "",
+  extraPrice = 0,
+  basePriceOverride = null
+) {
   const it = findItem(baseId);
   if (!it) return;
 
-  const basePrice =
-    basePriceOverride != null ? basePriceOverride : it.price;
+  const basePrice = basePriceOverride != null ? basePriceOverride : it.price;
   const unitPrice = basePrice + extraPrice;
   const key = noteText
     ? `${baseId}|${noteText}|${unitPrice}`
@@ -1014,7 +1046,11 @@ document.addEventListener("click", e => {
     const sectionId = info.section.id;
     const item = info.item;
 
-    if (sectionId === "pizzas" || sectionId === "calzones" || sectionId === "stromboli") {
+    if (
+      sectionId === "pizzas" ||
+      sectionId === "calzones" ||
+      sectionId === "stromboli"
+    ) {
       openPizzaModal(id, item.name);
     } else if (
       sectionId === "cheesesteaks" ||
@@ -1079,7 +1115,11 @@ document.addEventListener("click", e => {
     const baseId = ci.id;
     const item = info.item;
 
-    if (sectionId === "pizzas" || sectionId === "calzones" || sectionId === "stromboli") {
+    if (
+      sectionId === "pizzas" ||
+      sectionId === "calzones" ||
+      sectionId === "stromboli"
+    ) {
       openPizzaModal(baseId, item.name);
     } else if (
       sectionId === "cheesesteaks" ||
@@ -1195,9 +1235,7 @@ if (pizzaAdd) {
     }
 
     const toppingBase =
-      SIZE_TOPPING[size] != null
-        ? SIZE_TOPPING[size]
-        : SIZE_TOPPING.large;
+      SIZE_TOPPING[size] != null ? SIZE_TOPPING[size] : SIZE_TOPPING.large;
 
     const selections = [];
     let extraPrice = 0;
@@ -1660,7 +1698,9 @@ function openAppModal(id, name, price) {
     APP_SAUCES.forEach((s, i) => {
       sHtml += `
         <label>
-          <input type="radio" name="appSauce" value="${s.value}" data-label="${s.label}" ${i === 0 ? "checked" : ""}>
+          <input type="radio" name="appSauce" value="${s.value}" data-label="${s.label}" ${
+        i === 0 ? "checked" : ""
+      }>
           ${s.label}
         </label>
       `;
@@ -1707,7 +1747,9 @@ if (appAdd) {
       'input[name="appSauce"]:checked'
     );
     if (sauceSel) {
-      parts.push(`Included sauce: ${sauceSel.dataset.label || sauceSel.value}`);
+      parts.push(
+        `Included sauce: ${sauceSel.dataset.label || sauceSel.value}`
+      );
     }
 
     if (appExtrasBox) {
@@ -1859,7 +1901,9 @@ if (cardSendBtn) {
     const zip = cardZip ? cardZip.value.trim() : "";
 
     if (!name || !num || !exp || !cvv) {
-      alert("Please fill in all required card fields (name, number, expiration, CVV).");
+      alert(
+        "Please fill in all required card fields (name, number, expiration, CVV)."
+      );
       return;
     }
 
@@ -1867,11 +1911,11 @@ if (cardSendBtn) {
 
     alert(
       `Card data captured:\n` +
-      `Name: ${name}\n` +
-      `Card: **** **** **** ${last4}\n` +
-      `Exp: ${exp}\n` +
-      `ZIP: ${zip || "-"}\n\n` +
-      `Now process this card on your terminal and confirm the order.`
+        `Name: ${name}\n` +
+        `Card: **** **** **** ${last4}\n` +
+        `Exp: ${exp}\n` +
+        `ZIP: ${zip || "-"}\n\n` +
+        `Now process this card on your terminal and confirm the order.`
     );
 
     if (checkoutBtn) {
@@ -1894,10 +1938,7 @@ function buildKitchenTicket() {
     })
     .join("\n");
 
-  const payText =
-    state.payMethod === "cash"
-      ? "CASH"
-      : "CREDIT CARD";
+  const payText = state.payMethod === "cash" ? "CASH" : "CREDIT CARD";
 
   const orderTypeText =
     state.orderType === "delivery"
@@ -1911,12 +1952,13 @@ function buildKitchenTicket() {
       `Name: ${delName && delName.value ? delName.value : "-"}\n` +
       `Phone: ${delPhone && delPhone.value ? delPhone.value : "-"}\n` +
       `Email: ${delEmail && delEmail.value ? delEmail.value : "-"}\n` +
-      `Address: ${delAddress && delAddress.value ? delAddress.value : "-"}`;
+      `Address: ${
+        delAddress && delAddress.value ? delAddress.value : "-"
+      }`;
   }
 
   const now = new Date();
-  const ts =
-    now.toLocaleDateString() + " " + now.toLocaleTimeString();
+  const ts = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
   const txt =
     `ALDO'S PIZZERIA\n` +
@@ -1936,6 +1978,7 @@ function buildKitchenTicket() {
 
 // ============== SEND TO CLOUDPRNT SERVER ==============
 async function sendToKitchen(ticketText) {
+  // Make sure we have everything
   if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) return;
 
   try {
@@ -2002,7 +2045,9 @@ if (checkoutBtn) {
         `\nName: ${delName && delName.value ? delName.value : "-"}` +
         `\nPhone: ${delPhone && delPhone.value ? delPhone.value : "-"}` +
         `\nEmail: ${delEmail && delEmail.value ? delEmail.value : "-"}` +
-        `\nAddress: ${delAddress && delAddress.value ? delAddress.value : "-"}`;
+        `\nAddress: ${
+          delAddress && delAddress.value ? delAddress.value : "-"
+        }`;
     }
 
     if (state.payMethod === "card") {
@@ -2065,6 +2110,4 @@ if (emptyBtn) {
 renderCats();
 renderMenu();
 renderCart();
-if (cart) {
-  cart.classList.add("open");
-}
+cart.classList.add("open");
