@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aldo's Pizzeria – Kiosk Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <img src="logo.png" alt="Aldo's Pizzeria" class="logo" />
+        <div class="topbar-text">
+          <div class="biz-name">Aldo's Pizzeria</div>
+          <div class="biz-addr">2070 Street Rd, Bensalem, PA 19020</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <a href="tel:12156504170" class="phone-btn">
+          📞 215 650 4170
+        </a>
+        <button id="cartToggle" class="cart-btn">
+          🛒 <span>Cart</span>
+          <span id="cartCount" class="cart-count">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- LEFT: MENU -->
+    <main class="main">
+      <div class="search-row">
+        <input id="q" type="text" placeholder="Search the menu..." />
+      </div>
+
+      <div id="catBar" class="cat-bar"></div>
+      <div id="menu"></div>
+    </main>
+
+    <!-- RIGHT: CART -->
+    <aside id="cart" class="cart">
+      <div class="cart-header">
+        <h2>Your Order</h2>
+        <button id="emptyCart" class="link-btn">Clear</button>
+      </div>
+
+      <div id="cartItems" class="cart-items"></div>
+
+      <div class="cart-summary">
+        <div class="row">
+          <span>Subtotal</span>
+          <strong id="subtotal">$0.00</strong>
+        </div>
+        <div class="row">
+          <span>Sales Tax 6%</span>
+          <strong id="tax">$0.00</strong>
+        </div>
+        <div class="row total-row">
+          <span>Total</span>
+          <strong id="total">$0.00</strong>
+        </div>
+
+        <!-- ORDER TYPE -->
+        <h3 class="cart-subtitle">Order type</h3>
+
+        <div class="cart-radio-group">
+          <label class="cart-radio-row">
+            <input type="radio" name="orderType" value="pickup" checked>
+            <span>
+              Pickup <small>(approximately 30 minutes)</small>
+            </span>
+          </label>
+
+          <label class="cart-radio-row">
+            <input type="radio" name="orderType" value="delivery">
+            <span>
+              Delivery <small>(approximately 55 minutes)</small>
+            </span>
+          </label>
+        </div>
+
+        <!-- DELIVERY FIELDS (only if delivery) -->
+        <div id="deliveryFields" class="delivery-fields hidden">
+          <h4 class="cart-subtitle">Delivery details</h4>
+
+          <label class="cart-field">
+            <span>Full name</span>
+            <input type="text" id="delName" placeholder="John Smith">
+          </label>
+
+          <label class="cart-field">
+            <span>Phone number</span>
+            <input type="tel" id="delPhone" placeholder="215-650-4170">
+          </label>
+
+          <label class="cart-field">
+            <span>Email</span>
+            <input type="email" id="delEmail" placeholder="email@example.com">
+          </label>
+
+          <label class="cart-field">
+            <span>Delivery address</span>
+            <textarea id="delAddress" rows="2" placeholder="Street, city, zip code"></textarea>
+          </label>
+        </div>
+
+        <!-- PAYMENT -->
+        <div class="pay-row">
+          <span>Payment method:</span>
+          <label>
+            <input type="radio" name="pay" value="cash" checked />
+            Cash
+          </label>
+          <label>
+            <input type="radio" name="pay" value="card" />
+            Card (Visa / MasterCard / Discover / AmEx)
+          </label>
+        </div>
+
+        <!-- CREDIT CARD FORM (only if pay = card) -->
+        <div id="cardFields" class="card-fields hidden">
+          <h4 class="cart-subtitle">Credit card details</h4>
+
+          <label class="cart-field">
+            <span>Cardholder name</span>
+            <input type="text" id="cardName" placeholder="Name on card" autocomplete="cc-name">
+          </label>
+
+          <label class="cart-field">
+            <span>Card number</span>
+            <input type="text" id="cardNumber" placeholder="•••• •••• •••• ••••" inputmode="numeric" autocomplete="cc-number">
+          </label>
+
+          <div class="card-row">
+            <label class="cart-field">
+              <span>Exp. date</span>
+              <input type="text" id="cardExp" placeholder="MM/YY" autocomplete="cc-exp">
+            </label>
+            <label class="cart-field">
+              <span>CVV</span>
+              <input type="password" id="cardCvv" placeholder="CVV" autocomplete="cc-csc">
+            </label>
+          </div>
+
+          <label class="cart-field">
+            <span>ZIP code</span>
+            <input type="text" id="cardZip" placeholder="ZIP / Postal code" autocomplete="postal-code">
+          </label>
+
+          <button id="cardSend" class="btn" style="margin-top: 0.75rem;">
+            Send order (card payment)
+          </button>
+
+          <p class="special-help">
+            NOTE: This kiosk does not charge the card automatically. Please run the card on your terminal and use this form only to capture data.
+          </p>
+        </div>
+
+        <div class="cart-actions">
+          <button id="print" class="btn alt">Print order</button>
+          <button id="checkout" class="btn">Checkout</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- PIZZA / CALZONE / STROMBOLI MODAL -->
+    <div id="pizzaModal" class="modal hidden">
+      <div class="modal-box">
+        <h2 id="pizzaModalTitle">Customize pizza</h2>
+        <p class="modal-sub">
+          Choose the size and toppings (half 1, half 2 or whole pizza).
+        </p>
+
+        <div class="size-row">
+          <span class="size-label">Size:</span>
+          <label>
+            <input type="radio" name="pizzaSize" value="personal" />
+            Small 12"
+          </label>
+          <label>
+            <input type="radio" name="pizzaSize" value="medium" />
+            Medium 14"
+          </label>
+          <label>
+            <input type="radio" name="pizzaSize" value="large" checked />
+            Large 16"
+          </label>
+        </div>
+
+        <div id="toppingTable" class="toppings-table"></div>
+
+        <div class="special-box">
+          <label for="specialInstructions" class="special-label">
+            Special instructions
+          </label>
+          <textarea
+            id="specialInstructions"
+            rows="3"
+            placeholder="Example: no onions, well-done, cut in squares"
+          ></textarea>
+          <p class="special-help">
+            NOTE: Items entered here may cost extra.
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button id="pizzaCancel" class="btn alt">Cancel</button>
+          <button id="pizzaAdd" class="btn">Add to cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBS / BURGERS MODAL -->
+    <div id="subModal" class="modal hidden">
+      <div class="modal-content sub-box">
+        <button class="modal-close" id="subCloseBtn">&times;</button>
+
+        <h2 id="subModalTitle" class="modal-title">Cheesesteak</h2>
+
+        <div class="modal-section sub-header">
+          <div class="sub-header-left">
+            <div id="subBasePrice" class="modal-price">$0.00</div>
+            <div class="modal-qty">
+              <button type="button" id="subMinus" class="qty-btn">−</button>
+              <input
+                id="subQty"
+                type="number"
+                min="1"
+                value="1"
+                class="qty-input"
+              />
+              <button type="button" id="subPlus" class="qty-btn">+</button>
+            </div>
+          </div>
+
+          <button type="button" id="subTopAdd" class="btn primary">
+            Add To Cart
+          </button>
+        </div>
+
+        <hr />
+
+        <h3 class="modal-subtitle">Add toppings</h3>
+        <div id="subAddons" class="addons-grid">
+          <!-- JS renders here -->
+        </div>
+
+        <h3 class="modal-subtitle">Special instructions</h3>
+        <textarea
+          id="subSpecialInstructions"
+          class="modal-textarea"
+          placeholder="Example: no onions, extra mayo, well-done"
+        ></textarea>
+        <p class="special-help">
+          NOTE: Items entered here may cost extra.
+        </p>
+
+        <div class="modal-buttons">
+          <button type="button" id="subCancel" class="btn-cancel">Cancel</button>
+          <button type="button" id="subAdd" class="btn-add">Add to cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DRINKS MODAL (MULTI CHOICE) -->
+    <div id="drinkModal" class="modal hidden">
+      <div class="modal-content drink-box">
+        <button class="modal-close" id="drinkCloseBtn">&times;</button>
+
+        <h2 id="drinkModalTitle" class="modal-title">Drinks</h2>
+
+        <div class="modal-section drink-header">
+          <div class="drink-price-qty">
+            <div id="drinkPrice" class="modal-price">$0.00</div>
+          </div>
+          <button type="button" id="drinkTopAdd" class="btn primary">
+            Add To Cart
+          </button>
+        </div>
+
+        <hr />
+
+        <h3 class="modal-subtitle">Select one or more flavors</h3>
+        <div id="drinkFlavors" class="radio-grid">
+          <!-- JS renders here -->
+        </div>
+
+        <h3 class="modal-subtitle">Special instructions</h3>
+        <textarea
+          id="drinkSpecial"
+          class="modal-textarea"
+          placeholder="Example: no ice, light ice, 2 Coke & 1 Sprite…"
+        ></textarea>
+        <p class="special-help">
+          NOTE: Items entered here may cost extra.
+        </p>
+
+        <div class="modal-buttons">
+          <button type="button" id="drinkCancel" class="btn-cancel">Cancel</button>
+          <button type="button" id="drinkAdd" class="btn-add">Add To Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WINGS MODAL -->
+    <div id="wingModal" class="modal hidden">
+      <div class="modal-box">
+        <h2 id="wingModalTitle">Wings</h2>
+        <p id="wingPrice" class="modal-price">$0.00</p>
+
+        <div class="wing-qty-row">
+          <button type="button" id="wingMinus" class="wing-qty-btn">−</button>
+          <input id="wingQty" type="number" min="1" value="1">
+          <button type="button" id="wingPlus" class="wing-qty-btn">+</button>
+          <button type="button" id="wingTopAdd" class="btn">Add to cart</button>
+        </div>
+
+        <hr class="wing-divider">
+
+        <h3 class="modal-sub">SAUCE</h3>
+        <div class="wing-radio-row">
+          <label>
+            <input
+              type="radio"
+              name="wingSauce"
+              value="bbq"
+              data-label="BBQ"
+              checked
+            />
+            BBQ
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="wingSauce"
+              value="hot"
+              data-label="Hot"
+            />
+            HOT
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="wingSauce"
+              value="mild"
+              data-label="Mild"
+            />
+            MILD
+          </label>
+        </div>
+
+        <hr class="wing-divider">
+
+        <h3 class="modal-sub">DRESSING</h3>
+        <div class="wing-radio-row">
+          <label>
+            <input
+              type="radio"
+              name="wingDressing"
+              value="blue"
+              data-label="Blue cheese dressing"
+              checked
+            />
+            BLUE CHEESE DRESSING
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="wingDressing"
+              value="ranch"
+              data-label="Ranch dressing"
+            />
+            RANCH DRESSING
+          </label>
+        </div>
+
+        <div class="special-box">
+          <label for="wingSpecial" class="special-label">Special instructions</label>
+          <textarea
+            id="wingSpecial"
+            rows="3"
+            placeholder="Example: extra crispy, sauce on the side"
+          ></textarea>
+          <p class="special-help">
+            NOTE: Items entered here may cost extra.
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button id="wingCancel" class="btn alt">Cancel</button>
+          <button id="wingAdd" class="btn">Add to cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASTA MODAL -->
+    <div id="pastaModal" class="modal hidden">
+      <div class="modal-box">
+        <h2 id="pastaModalTitle">Pasta</h2>
+        <p id="pastaPrice" class="modal-price">$0.00</p>
+
+        <h3 class="modal-sub">PASTA TYPE</h3>
+        <div class="wing-radio-row">
+          <label>
+            <input type="radio" name="pastaShape" value="penne" data-label="Penne" checked />
+            PENNE
+          </label>
+          <label>
+            <input type="radio" name="pastaShape" value="spaghetti" data-label="Spaghetti" />
+            SPAGHETTI
+          </label>
+          <label>
+            <input type="radio" name="pastaShape" value="rigatoni" data-label="Rigatoni" />
+            RIGATONI
+          </label>
+          <label>
+            <input type="radio" name="pastaShape" value="linguini" data-label="Linguini" />
+            LINGUINI
+          </label>
+          <label>
+            <input type="radio" name="pastaShape" value="fettuccini" data-label="Fettuccini" />
+            FETTUCCINI
+          </label>
+        </div>
+
+        <h3 class="modal-sub">SOUP OR SALAD</h3>
+        <div class="wing-radio-row">
+          <label>
+            <input
+              type="radio"
+              name="pastaSide"
+              value="soup"
+              data-label="Chicken noodle soup"
+              checked
+            />
+            SOUP
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="pastaSide"
+              value="salad"
+              data-label="Salad"
+            />
+            SALAD
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="pastaSide"
+              value="none"
+              data-label="No soup or salad"
+            />
+            NO SOUP OR SALAD
+          </label>
+        </div>
+
+        <h3 class="modal-sub">SALAD DRESSING (if salad)</h3>
+        <div class="wing-radio-row">
+          <label><input type="radio" name="pastaDressing" value="ranch" data-label="Ranch" checked />RANCH</label>
+          <label><input type="radio" name="pastaDressing" value="french" data-label="French" />FRENCH</label>
+          <label><input type="radio" name="pastaDressing" value="italian" data-label="Italian" />ITALIAN</label>
+          <label><input type="radio" name="pastaDressing" value="oilvinegar" data-label="Oil &amp; vinegar" />OIL &amp; VINEGAR</label>
+          <label><input type="radio" name="pastaDressing" value="blue" data-label="Blue cheese" />BLUE CHEESE</label>
+          <label><input type="radio" name="pastaDressing" value="honey" data-label="Honey mustard" />HONEY MUSTARD</label>
+          <label><input type="radio" name="pastaDressing" value="caesar" data-label="Caesar" />CAESAR</label>
+          <label><input type="radio" name="pastaDressing" value="russian" data-label="Russian" />RUSSIAN</label>
+        </div>
+
+        <h3 class="modal-sub">EXTRAS</h3>
+        <div class="wing-radio-row">
+          <label>
+            <input type="checkbox" id="pastaExtraShrimp" data-price="5" />
+            Add shrimp (+$5.00)
+          </label>
+        </div>
+
+        <div class="special-box">
+          <label for="pastaSpecial" class="special-label">Special instructions</label>
+          <textarea
+            id="pastaSpecial"
+            rows="3"
+            placeholder="Example: extra al dente, sauce on the side"
+          ></textarea>
+          <p class="special-help">
+            NOTE: Items entered here may cost extra.
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button id="pastaCancel" class="btn alt">Cancel</button>
+          <button id="pastaAdd" class="btn">Add to cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SALADS MODAL -->
+    <div id="saladModal" class="modal hidden">
+      <div class="modal-box">
+        <h2 id="saladModalTitle">Salad</h2>
+        <p id="saladPrice" class="modal-price">$0.00</p>
+
+        <h3 class="modal-sub">SIZE</h3>
+        <div id="saladSize" class="wing-radio-row">
+          <!-- JS will overwrite with prices per size -->
+          <label>
+            <input type="radio" name="saladSize" value="small" />Small
+          </label>
+          <label>
+            <input type="radio" name="saladSize" value="large" checked />Large
+          </label>
+        </div>
+
+        <h3 class="modal-sub">DRESSING</h3>
+        <div class="wing-radio-row">
+          <label><input type="radio" name="saladDressing" value="ranch" data-label="Ranch" checked />RANCH</label>
+          <label><input type="radio" name="saladDressing" value="french" data-label="French" />FRENCH</label>
+          <label><input type="radio" name="saladDressing" value="italian" data-label="Italian" />ITALIAN</label>
+          <label><input type="radio" name="saladDressing" value="oilvinegar" data-label="Oil &amp; vinegar" />OIL &amp; VINEGAR</label>
+          <label><input type="radio" name="saladDressing" value="blue" data-label="Blue cheese" />BLUE CHEESE</label>
+          <label><input type="radio" name="saladDressing" value="honey" data-label="Honey mustard" />HONEY MUSTARD</label>
+          <label><input type="radio" name="saladDressing" value="caesar" data-label="Caesar" />CAESAR</label>
+          <label><input type="radio" name="saladDressing" value="russian" data-label="Russian" />RUSSIAN</label>
+        </div>
+
+        <div class="special-box">
+          <label for="saladSpecial" class="special-label">Special instructions</label>
+          <textarea
+            id="saladSpecial"
+            rows="3"
+            placeholder="Example: no onions, dressing on the side"
+          ></textarea>
+          <p class="special-help">
+            NOTE: Items entered here may cost extra.
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button id="saladCancel" class="btn alt">Cancel</button>
+          <button id="saladAdd" class="btn">Add to cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPETIZERS MODAL -->
+    <div id="appModal" class="modal hidden">
+      <div class="modal-box">
+        <h2 id="appModalTitle">Appetizer</h2>
+        <p id="appPrice" class="modal-price">$0.00</p>
+
+        <div class="wing-qty-row">
+          <button type="button" id="appMinus" class="wing-qty-btn">−</button>
+          <input id="appQty" type="number" min="1" value="1">
+          <button type="button" id="appPlus" class="wing-qty-btn">+</button>
+          <button type="button" id="appTopAdd" class="btn">Add to cart</button>
+        </div>
+
+        <hr class="wing-divider">
+
+        <h3 class="modal-sub">INCLUDED SAUCE (CHOOSE 1)</h3>
+        <div id="appSauces" class="wing-radio-row">
+          <!-- JS will overwrite with sauce list -->
+        </div>
+
+        <hr class="wing-divider">
+
+        <h3 class="modal-sub">EXTRA SAUCE</h3>
+        <div id="appExtras" class="wing-radio-row">
+          <!-- JS will overwrite -->
+        </div>
+
+        <div class="special-box">
+          <label for="appSpecial" class="special-label">Special instructions</label>
+          <textarea
+            id="appSpecial"
+            rows="3"
+            placeholder="Example: extra crispy, sauce on the side"
+          ></textarea>
+          <p class="special-help">
+            NOTE: Items entered here may cost extra.
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button id="appCancel" class="btn alt">Cancel</button>
+          <button id="appAdd" class="btn">Add to cart</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
