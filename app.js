@@ -1,6 +1,6 @@
 // =================== CLOUDPRNT CONFIG ===================
 const CLOUDPRNT_ENDPOINT =
-  "https://aldos-printcore-server-aldos-cloudprnt-basic-2.onrender.com/submit"; // Render endpoint
+  "https://aldos-printcore-server-1.onrender.com/submit"; // Render endpoint
 const PRINTER_DEVICE_ID =
   "z2q6dwp2hagm"; // Replace with the exact ID you see on the printer ticket under "<< Star CloudPRNT >>  ID"
 
