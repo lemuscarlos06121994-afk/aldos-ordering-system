@@ -1965,10 +1965,6 @@ function buildKitchenTicket() {
   return txt;
 }
 
-// ================== CLOUDPRNT CONFIG ==================
-const CLOUDPRNT_ENDPOINT =
-  "https://aldos-printcore-server-1.onrender.com/submit"; // Render: endpoint POST
-
 // ================== SEND TO CLOUDPRNT SERVER ==================
 async function sendTicketToKitchen(ticketText) {
   if (!ticketText || !CLOUDPRNT_ENDPOINT) return;
