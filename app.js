@@ -1965,8 +1965,12 @@ function buildKitchenTicket() {
   return txt;
 }
 
-// ============== SEND TO CLOUDPRNT SERVER ==============
-async function sendToKitchen(ticketText) {
+// ================== CLOUDPRNT CONFIG ==================
+const CLOUDPRNT_ENDPOINT =
+  "https://aldos-printcore-server-1.onrender.com/submit"; // Render: endpoint POST
+
+// ================== SEND TO CLOUDPRNT SERVER ==================
+async function sendTicketToKitchen(ticketText) {
   if (!ticketText || !CLOUDPRNT_ENDPOINT) return;
 
   try {
@@ -1974,13 +1978,14 @@ async function sendToKitchen(ticketText) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        deviceId: PRINTER_DEVICE_ID,
-        content: ticketText
+        // Esto es EXACTAMENTE lo que espera el servidor Node:
+        ticket: ticketText
       })
     });
 
     if (!res.ok) {
-      console.error("CloudPRNT server returned an error:", await res.text());
+      const msg = await res.text().catch(() => "");
+      console.error("CloudPRNT server returned an error:", msg || res.status);
       alert("Error sending order to kitchen printer.");
       return;
     }
@@ -1991,7 +1996,6 @@ async function sendToKitchen(ticketText) {
     alert("Network error sending order to kitchen printer.");
   }
 }
-
 // ============== PRINT BUTTON (BROWSER + CLOUDPRNT) ==============
 if (printBtn) {
   printBtn.addEventListener("click", () => {
