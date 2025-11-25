@@ -1,8 +1,10 @@
 // =================== CLOUDPRNT CONFIG ===================
+// Your Render CloudPRNT server endpoint
 const CLOUDPRNT_ENDPOINT =
-  "https://aldos-printcore-server-1.onrender.com/submit"; // Render endpoint
-const PRINTER_DEVICE_ID =
-  "z2q6dwp2hagm"; // Replace with the exact ID you see on the printer ticket under "<< Star CloudPRNT >>  ID"
+  "https://aldos-printcore-server-aldos-cloudprnt-basic-2.onrender.com/cloudprnt/order";
+
+// CloudPRNT Device ID (the one you configured in the printer panel)
+const PRINTER_DEVICE_ID = "aldos-kiosko-1";
 
 // =================== MENU DATA ===================
 const DATA = [
@@ -271,8 +273,7 @@ const DATA = [
       {
         id: "hg-3",
         name: "AMERICAN HOAGIE",
-        desc:
-          "Ham, salami, American cheese, lettuce, tomato, onion, long roll.",
+        desc: "Ham, salami, American cheese, lettuce, tomato, onion, long roll.",
         price: 9.25
       },
       {
@@ -576,7 +577,8 @@ const DATA = [
       {
         id: "pa-7",
         name: "PASTA ALFREDO SAUCE",
-        desc: "Alfredo sauce, served with soup or salad & bread.",
+        desc:
+          "Alfredo sauce, served with soup or salad & bread.",
         price: 15.85
       },
       {
@@ -596,7 +598,8 @@ const DATA = [
       {
         id: "pa-10",
         name: "PASTA WITH TOMATO SAUCE",
-        desc: "Tomato sauce, served with soup or salad & bread.",
+        desc:
+          "Tomato sauce, served with soup or salad & bread.",
         price: 14.85
       },
       {
@@ -953,16 +956,12 @@ if (qInput) {
 }
 
 // ============== CART HELPERS ==============
-function addToCart(
-  baseId,
-  noteText = "",
-  extraPrice = 0,
-  basePriceOverride = null
-) {
+function addToCart(baseId, noteText = "", extraPrice = 0, basePriceOverride = null) {
   const it = findItem(baseId);
   if (!it) return;
 
-  const basePrice = basePriceOverride != null ? basePriceOverride : it.price;
+  const basePrice =
+    basePriceOverride != null ? basePriceOverride : it.price;
   const unitPrice = basePrice + extraPrice;
   const key = noteText
     ? `${baseId}|${noteText}|${unitPrice}`
@@ -1046,11 +1045,7 @@ document.addEventListener("click", e => {
     const sectionId = info.section.id;
     const item = info.item;
 
-    if (
-      sectionId === "pizzas" ||
-      sectionId === "calzones" ||
-      sectionId === "stromboli"
-    ) {
+    if (sectionId === "pizzas" || sectionId === "calzones" || sectionId === "stromboli") {
       openPizzaModal(id, item.name);
     } else if (
       sectionId === "cheesesteaks" ||
@@ -1115,11 +1110,7 @@ document.addEventListener("click", e => {
     const baseId = ci.id;
     const item = info.item;
 
-    if (
-      sectionId === "pizzas" ||
-      sectionId === "calzones" ||
-      sectionId === "stromboli"
-    ) {
+    if (sectionId === "pizzas" || sectionId === "calzones" || sectionId === "stromboli") {
       openPizzaModal(baseId, item.name);
     } else if (
       sectionId === "cheesesteaks" ||
@@ -1235,7 +1226,9 @@ if (pizzaAdd) {
     }
 
     const toppingBase =
-      SIZE_TOPPING[size] != null ? SIZE_TOPPING[size] : SIZE_TOPPING.large;
+      SIZE_TOPPING[size] != null
+        ? SIZE_TOPPING[size]
+        : SIZE_TOPPING.large;
 
     const selections = [];
     let extraPrice = 0;
@@ -1698,9 +1691,7 @@ function openAppModal(id, name, price) {
     APP_SAUCES.forEach((s, i) => {
       sHtml += `
         <label>
-          <input type="radio" name="appSauce" value="${s.value}" data-label="${s.label}" ${
-        i === 0 ? "checked" : ""
-      }>
+          <input type="radio" name="appSauce" value="${s.value}" data-label="${s.label}" ${i === 0 ? "checked" : ""}>
           ${s.label}
         </label>
       `;
@@ -1747,9 +1738,7 @@ if (appAdd) {
       'input[name="appSauce"]:checked'
     );
     if (sauceSel) {
-      parts.push(
-        `Included sauce: ${sauceSel.dataset.label || sauceSel.value}`
-      );
+      parts.push(`Included sauce: ${sauceSel.dataset.label || sauceSel.value}`);
     }
 
     if (appExtrasBox) {
@@ -1901,9 +1890,7 @@ if (cardSendBtn) {
     const zip = cardZip ? cardZip.value.trim() : "";
 
     if (!name || !num || !exp || !cvv) {
-      alert(
-        "Please fill in all required card fields (name, number, expiration, CVV)."
-      );
+      alert("Please fill in all required card fields (name, number, expiration, CVV).");
       return;
     }
 
@@ -1911,11 +1898,11 @@ if (cardSendBtn) {
 
     alert(
       `Card data captured:\n` +
-        `Name: ${name}\n` +
-        `Card: **** **** **** ${last4}\n` +
-        `Exp: ${exp}\n` +
-        `ZIP: ${zip || "-"}\n\n` +
-        `Now process this card on your terminal and confirm the order.`
+      `Name: ${name}\n` +
+      `Card: **** **** **** ${last4}\n` +
+      `Exp: ${exp}\n` +
+      `ZIP: ${zip || "-"}\n\n` +
+      `Now process this card on your terminal and confirm the order.`
     );
 
     if (checkoutBtn) {
@@ -1938,7 +1925,10 @@ function buildKitchenTicket() {
     })
     .join("\n");
 
-  const payText = state.payMethod === "cash" ? "CASH" : "CREDIT CARD";
+  const payText =
+    state.payMethod === "cash"
+      ? "CASH"
+      : "CREDIT CARD";
 
   const orderTypeText =
     state.orderType === "delivery"
@@ -1952,13 +1942,12 @@ function buildKitchenTicket() {
       `Name: ${delName && delName.value ? delName.value : "-"}\n` +
       `Phone: ${delPhone && delPhone.value ? delPhone.value : "-"}\n` +
       `Email: ${delEmail && delEmail.value ? delEmail.value : "-"}\n` +
-      `Address: ${
-        delAddress && delAddress.value ? delAddress.value : "-"
-      }`;
+      `Address: ${delAddress && delAddress.value ? delAddress.value : "-"}`;
   }
 
   const now = new Date();
-  const ts = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+  const ts =
+    now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
   const txt =
     `ALDO'S PIZZERIA\n` +
@@ -1975,32 +1964,54 @@ function buildKitchenTicket() {
 
   return txt;
 }
+
 // ============== SEND TO CLOUDPRNT SERVER ==============
 async function sendToKitchen(ticketText) {
   if (!ticketText || !CLOUDPRNT_ENDPOINT) return;
 
-  const res = await fetch(CLOUDPRNT_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      ticket: ticketText,          // 👈 importante que se llame "ticket"
-      deviceId: PRINTER_DEVICE_ID  // opcional, pero útil
-    })
-  });
+  try {
+    const res = await fetch(CLOUDPRNT_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        deviceId: PRINTER_DEVICE_ID,
+        content: ticketText
+      })
+    });
 
-  if (!res.ok) {
-    console.error("CloudPRNT server returned an error:", await res.text());
-    throw new Error("CloudPRNT server error");
+    if (!res.ok) {
+      console.error("CloudPRNT server returned an error:", await res.text());
+      alert("Error sending order to kitchen printer.");
+      return;
+    }
+
+    console.log("Ticket sent to CloudPRNT server.");
+  } catch (err) {
+    console.error("Error sending ticket to CloudPRNT:", err);
+    alert("Network error sending order to kitchen printer.");
   }
-
-  console.log("Ticket sent to CloudPRNT server.");
 }
 
-// ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) =============
-if (!state.items.length) {
-  alert("Your cart is empty.");
-  return;
+// ============== PRINT BUTTON (BROWSER + CLOUDPRNT) ==============
+if (printBtn) {
+  printBtn.addEventListener("click", () => {
+    const ticket = buildKitchenTicket();
+
+    // Browser print window
+    const w = window.open("", "print");
+    w.document.write(
+      `<pre style="font:16px/1.45 monospace; white-space:pre-wrap;">${ticket}</pre>`
+    );
+    w.print();
+
+    // CloudPRNT (remote kitchen)
+    sendToKitchen(ticket);
+  });
 }
+
+// ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) ==============
+if (checkoutBtn) {
+  checkoutBtn.addEventListener("click", () => {
     const payText =
       state.payMethod === "cash"
         ? "CASH"
@@ -2011,53 +2022,32 @@ if (!state.items.length) {
         ? "DELIVERY (approx. 55 minutes)"
         : "PICKUP (approx. 30 minutes)";
 
-    // Armamos el ticket para la cocina
-    const header = "ALDO'S PIZZERIA - KIOSK\n";
-    const line = "--------------------------------\n";
+    let msg =
+      `Total to pay: ${totalEl.textContent}\n` +
+      `Order type: ${orderTypeText}\n` +
+      `Payment method: ${payText}`;
 
-    let itemsText = "";
-    state.cart.forEach((item, i) => {
-      itemsText += `${i + 1}. ${item.name} (${item.sizeLabel || ""})\n`;
-      if (item.toppings && item.toppings.length) {
-        itemsText += `   Toppings: ${item.toppings.join(", ")}\n`;
-      }
-      itemsText += `   Qty: ${item.qty}   $${item.total.toFixed(2)}\n\n`;
-    });
-
-    const totalsText =
-      `Subtotal: $${state.subtotal.toFixed(2)}\n` +
-      `Sales Tax 6%: $${state.tax.toFixed(2)}\n` +
-      `TOTAL: $${state.total.toFixed(2)}\n`;
-
-    const footer =
-      `\nPayment: ${payText}\n` +
-      `Order Type: ${orderTypeText}\n` +
-      "\nTHANK YOU!\n";
-
-    const ticket = header + line + itemsText + line + totalsText + footer;
-
-    // 1) Mandar a la impresora vía CloudPRNT
-    try {
-      await sendToKitchen(ticket);
-      alert("Order sent to kitchen printer.");
-    } catch (e) {
-      console.error(e);
-      alert("Error sending order to kitchen printer.");
-      return; // No limpiamos el carrito si falla
+    if (state.orderType === "delivery") {
+      msg +=
+        `\n\nDelivery details:` +
+        `\nName: ${delName && delName.value ? delName.value : "-"}` +
+        `\nPhone: ${delPhone && delPhone.value ? delPhone.value : "-"}` +
+        `\nEmail: ${delEmail && delEmail.value ? delEmail.value : "-"}` +
+        `\nAddress: ${delAddress && delAddress.value ? delAddress.value : "-"}`;
     }
 
-    // 2) Limpiar carrito y resetear estado
-    state.cart = [];
-    state.subtotal = 0;
-    state.tax = 0;
-    state.total = 0;
-    // opcional: resetear tipo de orden / método de pago
-    // state.orderType = "pickup";
-    // state.payMethod = "cash";
+    if (state.payMethod === "card") {
+      msg +=
+        `\n\n➡ Please charge this amount on the CREDIT CARD terminal: ${totalEl.textContent}`;
+    } else {
+      msg += `\n\n➡ Customer will pay CASH at pickup / delivery.`;
+    }
 
-    saveState();
-    renderCart();
-    renderTotals();
+    alert(msg);
+
+    // Send to kitchen via CloudPRNT
+    const ticket = buildKitchenTicket();
+    sendToKitchen(ticket);
   });
 }
 
