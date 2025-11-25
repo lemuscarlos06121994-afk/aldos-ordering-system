@@ -1,10 +1,10 @@
 // =================== CLOUDPRNT CONFIG ===================
 // Your Render CloudPRNT server endpoint
 const CLOUDPRNT_ENDPOINT =
-  "https://aldos-printcore-server-aldos-cloudprnt-basic-2.onrender.com/cloudprnt/order";
+  "https://aldos-printcore-server-1.onrender.com/sumit";
 
 // CloudPRNT Device ID (the one you configured in the printer panel)
-const PRINTER_DEVICE_ID = "aldos-kiosko-1";
+const PRINTER_DEVICE_ID = "z2q6dwp2hagm";
 
 // =================== MENU DATA ===================
 const DATA = [
