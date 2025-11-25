@@ -2020,10 +2020,9 @@ if (printBtn) {
     sendToKitchen(ticket);
   });
 }
-
 // ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) ==============
 if (checkoutBtn) {
-  checkoutBtn.addEventListener("click", () => {
+  checkoutBtn.addEventListener("click", async () => {
     const payText =
       state.payMethod === "cash"
         ? "CASH"
@@ -2034,34 +2033,38 @@ if (checkoutBtn) {
         ? "DELIVERY (approx. 55 minutes)"
         : "PICKUP (approx. 30 minutes)";
 
-    let msg =
-      `Total to pay: ${totalEl.textContent}\n` +
-      `Order type: ${orderTypeText}\n` +
-      `Payment method: ${payText}`;
+    const ticket = buildKitchenTicket({
+      includeHeader: true,
+      includeFooter: true,
+      payText,
+      orderTypeText,
+    });
 
-    if (state.orderType === "delivery") {
-      msg +=
-        `\n\nDelivery details:` +
-        `\nName: ${delName && delName.value ? delName.value : "-"}` +
-        `\nPhone: ${delPhone && delPhone.value ? delPhone.value : "-"}` +
-        `\nEmail: ${delEmail && delEmail.value ? delEmail.value : "-"}` +
-        `\nAddress: ${
-          delAddress && delAddress.value ? delAddress.value : "-"
-        }`;
+    // Enviar a la cocina
+    const ok = await sendToKitchen(ticket);
+
+    if (!ok) {
+      alert("Hubo un problema enviando la orden a la cocina.");
+      return;
     }
 
-    if (state.payMethod === "card") {
-      msg +=
-        `\n\n➡ Please charge this amount on the CREDIT CARD terminal: ${totalEl.textContent}`;
-    } else {
-      msg += `\n\n➡ Customer will pay CASH at pickup / delivery.`;
+    alert("Orden enviada a la cocina ✅");
+
+    // 🔹 1) Vaciar el carrito
+    state.items = [];
+    // Si tienes otros campos que quieras resetear:
+    state.orderType = "pickup";
+    state.payMethod = "cash";
+
+    // 🔹 2) Limpiar cualquier estado guardado y recargar la página
+    try {
+      localStorage.clear();
+    } catch (e) {
+      console.warn("No se pudo limpiar localStorage:", e);
     }
 
-    alert(msg);
-
-    // Send to kitchen via CloudPRNT
-    const ticket = buildKitchenTicket();
-    sendToKitchen(ticket);
+    // Recargar para que el carrito quede limpio
+    window.location.reload();
   });
 }
 
