@@ -1997,7 +1997,10 @@ async function sendToKitchen(ticketText) {
 }
 
 // ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) =============
-
+if (!state.items.length) {
+  alert("Your cart is empty.");
+  return;
+}
     const payText =
       state.payMethod === "cash"
         ? "CASH"
