@@ -1938,32 +1938,31 @@ const CLOUDPRNT_ENDPOINT =
   "https://aldos-cloudprnt-server-1.onrender.com/submit";
 // Por ahora no necesitamos deviceId porque el servidor no lo pide.
 
-// ============== ENVIAR TICKET AL SERVIDOR ==============
-async function sendTicketToKitchen(ticketText) {
-  if (!ticketText) return false;
+// ============== SEND TO CLOUDPRNT SERVER ==============
+async function sendToKitchen(ticketText) {
+  if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) return false;
 
   try {
     const res = await fetch(CLOUDPRNT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        // ESTO es exactamente lo que espera tu servidor Node:
-        ticket: ticketText,
-      }),
+        deviceId: PRINTER_DEVICE_ID,
+        content: ticketText
+      })
     });
 
     if (!res.ok) {
-      const msg = await res.text().catch(() => "");
-      console.error("CloudPRNT server returned an error:", msg || res.status);
-      alert("Hubo un problema enviando la orden a la cocina.");
+      console.error("CloudPRNT server returned an error:", await res.text());
+      alert("Error sending order to kitchen printer.");
       return false;
     }
 
-    console.log("Ticket sent to CloudPRNT server.");
+    console.log("✅ Ticket sent to CloudPRNT server.");
     return true;
   } catch (err) {
     console.error("Error sending ticket to CloudPRNT:", err);
-    alert("Hubo un problema de red enviando la orden a la cocina.");
+    alert("Network error sending order to kitchen printer.");
     return false;
   }
 }
@@ -1984,49 +1983,52 @@ if (printBtn) {
 // ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) ==============
 if (checkoutBtn) {
   checkoutBtn.addEventListener("click", async () => {
-    // Si por alguna razón no hay items, no seguimos
-    if (!state.items.length) {
-      alert("Add at least one item before checkout.");
-      return;
-    }
-
-    const totals = calcTotals();
-
+    // 1) Texto de pago
     const payText =
       state.payMethod === "cash"
         ? "CASH"
         : "CREDIT CARD (Visa / MasterCard / Discover / AmEx)";
 
+    // 2) Tipo de orden
     const orderTypeText =
       state.orderType === "delivery"
         ? "DELIVERY (approx. 55 minutes)"
         : "PICKUP (approx. 30 minutes)";
 
-    // Construimos el ticket para la cocina
+    // 3) Resumen que ves en el popup
+    let msg =
+      `Total to pay: ${totalEl.textContent}\n` +
+      `Order type: ${orderTypeText}\n` +
+      `Payment method: ${payText}`;
+
+    if (state.orderType === "delivery") {
+      msg +=
+        `\n\nDelivery details:` +
+        `\nName: ${delName && delName.value ? delName.value : "-"}` +
+        `\nPhone: ${delPhone && delPhone.value ? delPhone.value : "-"}` +
+        `\nEmail: ${delEmail && delEmail.value ? delEmail.value : "-"}` +
+        `\nAddress: ${delAddress && delAddress.value ? delAddress.value : "-"}`;
+    }
+
+    if (state.payMethod === "card") {
+      msg +=
+        `\n\n➡ Please charge this amount on the CREDIT CARD terminal: ${totalEl.textContent}`;
+    } else {
+      msg += `\n\n➡ Customer will pay CASH at pickup / delivery.`;
+    }
+
+    alert(msg);
+
+    // 4) Construir ticket de cocina
     const ticket = buildKitchenTicket();
 
-    // Mensaje de confirmación para el cliente
-    alert(
-      `Total to pay: $${totals.total.toFixed(2)}\n` +
-        `Order type: ${orderTypeText}\n` +
-        `Payment method: ${payText}\n\n` +
-        (state.payMethod === "cash"
-          ? "Customer will pay CASH at pickup / delivery."
-          : "Customer will pay with CARD at the counter.")
-    );
+    // 5) Mandar al servidor CloudPRNT
+    const ok = await sendToKitchen(ticket);
 
-    // Enviamos a la impresora de cocina (CloudPRNT)
-    await sendToKitchen(ticket);
-
-    // --- Limpiar carrito y resetear estado después del checkout ---
-    state.items = [];
-    state.orderType = "pickup";
-    state.payMethod = "cash";
-    state.customerName = "";
-    state.phone = "";
-    state.comments = "";
-
-    saveState();
-    renderCart();
+    // 6) Si todo salió bien, vaciar carrito
+    if (ok) {
+      state.cart = {};
+      renderCart();
+    }
   });
 }
