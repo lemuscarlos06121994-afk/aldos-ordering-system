@@ -2004,25 +2004,14 @@ async function sendToKitchen(ticketText) {
 }
 
 
-// ============== PRINT BUTTON (BROWSER + CLOUDPRNT) ==============
-if (printBtn) {
-  printBtn.addEventListener("click", () => {
-    const ticket = buildKitchenTicket();
-
-    // Browser print window
-    const w = window.open("", "print");
-    w.document.write(
-      `<pre style="font:16px/1.45 monospace; white-space:pre-wrap;">${ticket}</pre>`
-    );
-    w.print();
-
-    // CloudPRNT (remote kitchen)
-    sendToKitchen(ticket);
-  });
-}
-// ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) ==============
+// ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) =============
 if (checkoutBtn) {
   checkoutBtn.addEventListener("click", async () => {
+    if (!state.cart.length) {
+      alert("Your cart is empty.");
+      return;
+    }
+
     const payText =
       state.payMethod === "cash"
         ? "CASH"
@@ -2033,38 +2022,53 @@ if (checkoutBtn) {
         ? "DELIVERY (approx. 55 minutes)"
         : "PICKUP (approx. 30 minutes)";
 
-    const ticket = buildKitchenTicket({
-      includeHeader: true,
-      includeFooter: true,
-      payText,
-      orderTypeText,
+    // Armamos el ticket para la cocina
+    const header = "ALDO'S PIZZERIA - KIOSK\n";
+    const line = "--------------------------------\n";
+
+    let itemsText = "";
+    state.cart.forEach((item, i) => {
+      itemsText += `${i + 1}. ${item.name} (${item.sizeLabel || ""})\n`;
+      if (item.toppings && item.toppings.length) {
+        itemsText += `   Toppings: ${item.toppings.join(", ")}\n`;
+      }
+      itemsText += `   Qty: ${item.qty}   $${item.total.toFixed(2)}\n\n`;
     });
 
-    // Enviar a la cocina
-    const ok = await sendToKitchen(ticket);
+    const totalsText =
+      `Subtotal: $${state.subtotal.toFixed(2)}\n` +
+      `Sales Tax 6%: $${state.tax.toFixed(2)}\n` +
+      `TOTAL: $${state.total.toFixed(2)}\n`;
 
-    if (!ok) {
-      alert("Hubo un problema enviando la orden a la cocina.");
-      return;
-    }
+    const footer =
+      `\nPayment: ${payText}\n` +
+      `Order Type: ${orderTypeText}\n` +
+      "\nTHANK YOU!\n";
 
-    alert("Orden enviada a la cocina ✅");
+    const ticket = header + line + itemsText + line + totalsText + footer;
 
-    // 🔹 1) Vaciar el carrito
-    state.items = [];
-    // Si tienes otros campos que quieras resetear:
-    state.orderType = "pickup";
-    state.payMethod = "cash";
-
-    // 🔹 2) Limpiar cualquier estado guardado y recargar la página
+    // 1) Mandar a la impresora vía CloudPRNT
     try {
-      localStorage.clear();
+      await sendToKitchen(ticket);
+      alert("Order sent to kitchen printer.");
     } catch (e) {
-      console.warn("No se pudo limpiar localStorage:", e);
+      console.error(e);
+      alert("Error sending order to kitchen printer.");
+      return; // No limpiamos el carrito si falla
     }
 
-    // Recargar para que el carrito quede limpio
-    window.location.reload();
+    // 2) Limpiar carrito y resetear estado
+    state.cart = [];
+    state.subtotal = 0;
+    state.tax = 0;
+    state.total = 0;
+    // opcional: resetear tipo de orden / método de pago
+    // state.orderType = "pickup";
+    // state.payMethod = "cash";
+
+    saveState();
+    renderCart();
+    renderTotals();
   });
 }
 
