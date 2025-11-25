@@ -1933,65 +1933,44 @@ function buildKitchenTicket() {
 
   return txt;
 }
-// ============== SEND TO CLOUDPRNT SERVER ==============
-async function sendToKitchenTicket(ticketText) {
-  // Si por alguna razón no hay ticket o la URL no está definida, no hacemos nada
-  if (!ticketText || !CLOUDPRNT_ENDPOINT) {
-    console.warn("Missing ticket text or CLOUDPRNT_ENDPOINT.");
-    return;
-  }
+// =================== CLOUDPRNT CONFIG ===================
+const CLOUDPRNT_ENDPOINT =
+  "https://aldos-cloudprnt-server-1.onrender.com/submit";
+// Por ahora no necesitamos deviceId porque el servidor no lo pide.
+
+// ============== ENVIAR TICKET AL SERVIDOR ==============
+async function sendTicketToKitchen(ticketText) {
+  if (!ticketText) return false;
 
   try {
     const res = await fetch(CLOUDPRNT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      // El servidor espera { ticket: "texto del ticket" }
-      body: JSON.stringify({ ticket: ticketText }),
+      body: JSON.stringify({
+        // ESTO es exactamente lo que espera tu servidor Node:
+        ticket: ticketText,
+      }),
     });
 
     if (!res.ok) {
-      let msg = "";
-      try {
-        msg = await res.text();
-      } catch (e) {
-        // ignore
-      }
-      console.error(
-        "CloudPRNT server returned an error:",
-        res.status,
-        msg || ""
-      );
-      alert("Error sending order to kitchen printer.");
-      return;
+      const msg = await res.text().catch(() => "");
+      console.error("CloudPRNT server returned an error:", msg || res.status);
+      alert("Hubo un problema enviando la orden a la cocina.");
+      return false;
     }
 
     console.log("Ticket sent to CloudPRNT server.");
+    return true;
   } catch (err) {
     console.error("Error sending ticket to CloudPRNT:", err);
-    alert("Network error sending order to kitchen printer.");
+    alert("Hubo un problema de red enviando la orden a la cocina.");
+    return false;
   }
 }
 
-// ============== LIMPIAR CARRITO Y ESTADO ==============
-function clearCartAndUI() {
-  // Estas propiedades ya existen en tu state
-  state.items = [];
-  state.orderType = "pickup";
-  state.payMethod = "cash";
-
-  renderCart();
-  renderTotals();
-}
-
-// ============== PRINT BUTTON (BROWSER + CLOUDPRNT) ==============
+// ============== BOTÓN PRINT (SÓLO IMPRESORA LOCAL DEL NAVEGADOR) ==============
 if (printBtn) {
   printBtn.addEventListener("click", () => {
-    // No dejar imprimir si de verdad está vacío
-    if (!state.items.length) {
-      alert("Your cart is empty.");
-      return;
-    }
-
     const ticket = buildKitchenTicket();
 
     // Ventana de impresión del navegador
@@ -1999,127 +1978,34 @@ if (printBtn) {
     w.document.write(
       `<pre style="font:16px/1.45 monospace; white-space:pre-wrap;">${ticket}</pre>`
     );
-    w.document.close();
-    w.focus();
     w.print();
-
-    // Enviar a la impresora de cocina por CloudPRNT
-    sendToKitchenTicket(ticket);
-
-    // Limpiar carrito después de mandar la orden
-    clearCartAndUI();
   });
 }
 
-// ============== CHECKOUT BUTTON (SOLO CLOUDPRNT) ==============
+// ============== BOTÓN CHECKOUT (ENVÍA A CLOUDPRNT + LIMPIA CARRITO) ==============
 if (checkoutBtn) {
-  checkoutBtn.addEventListener("click", () => {
-    // Protegernos si alguien da checkout sin productos
+  checkoutBtn.addEventListener("click", async () => {
+    // 1) Validar que haya productos
     if (!state.items.length) {
-      alert("Your cart is empty.");
+      alert("Tu carrito está vacío.");
       return;
     }
 
-    const ticket = buildKitchenTicket();
+    // 2) Construir ticket para cocina
+    const ticketText = buildKitchenTicket();
 
-    // Mandar ticket al servidor CloudPRNT
-    sendToKitchenTicket(ticket);
-
-    // Mensaje al cajero / cliente
-    alert("Thank you! Order sent to the kitchen.");
-
-    // Limpiar carrito y totales
-    clearCartAndUI();
-  });
-}
-
-// ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) ==============
-if (checkoutBtn) {
-  checkoutBtn.addEventListener("click", () => {
-    const payText =
-      state.payMethod === "cash"
-        ? "CASH"
-        : "CREDIT CARD (Visa / MasterCard / Discover / AmEx)";
-
-    const orderTypeText =
-      state.orderType === "delivery"
-        ? "DELIVERY (approx. 55 minutes)"
-        : "PICKUP (approx. 30 minutes)";
-
-    let msg =
-      `Total to pay: ${totalEl.textContent}\n` +
-      `Order type: ${orderTypeText}\n` +
-      `Payment method: ${payText}`;
-
-    if (state.orderType === "delivery") {
-      msg +=
-        `\n\nDelivery details:` +
-        `\nName: ${delName && delName.value ? delName.value : "-"}` +
-        `\nPhone: ${delPhone && delPhone.value ? delPhone.value : "-"}` +
-        `\nEmail: ${delEmail && delEmail.value ? delEmail.value : "-"}` +
-        `\nAddress: ${delAddress && delAddress.value ? delAddress.value : "-"}`;
-    }
-
-    if (state.payMethod === "card") {
-      msg +=
-        `\n\n➡ Please charge this amount on the CREDIT CARD terminal: ${totalEl.textContent}`;
-    } else {
-      msg += `\n\n➡ Customer will pay CASH at pickup / delivery.`;
-    }
-
-    alert(msg);
-
-    // Send to kitchen via CloudPRNT
-    const ticket = buildKitchenTicket();
-    sendToKitchen(ticket);
-  });
-}
-
-// ============== TOGGLE TOPPINGS (click again to undo) ==============
-document.addEventListener("click", e => {
-  const input = e.target;
-
-  if (
-    input &&
-    input.tagName === "INPUT" &&
-    input.type === "radio" &&
-    input.name &&
-    input.name.startsWith("top-")
-  ) {
-    if (input.dataset.wasChecked === "true") {
-      input.checked = false;
-      input.dataset.wasChecked = "false";
+    // 3) Enviar al servidor CloudPRNT
+    const ok = await sendTicketToKitchen(ticketText);
+    if (!ok) {
+      // Si hubo error ya mostramos el mensaje en sendTicketToKitchen
       return;
     }
 
-    const groupName = input.name;
-    document
-      .querySelectorAll(`input[name="${groupName}"]`)
-      .forEach(r => (r.dataset.wasChecked = "false"));
+    // 4) Confirmación al cliente
+    alert("Orden enviada a cocina. ¡Gracias!");
 
-    input.dataset.wasChecked = "true";
-  }
-});
-
-// ============== CART TOGGLE (MOBILE) ==============
-if (cartToggle && cart) {
-  cartToggle.addEventListener("click", () => {
-    cart.classList.toggle("open");
-  });
-}
-
-// ============== EMPTY CART BUTTON ==============
-if (emptyBtn) {
-  emptyBtn.addEventListener("click", () => {
-    state.cart = {};
+    // 5) Limpiar carrito y refrescar la vista
+    clearCart();
     renderCart();
   });
-}
-
-// ============== INIT ==============
-renderCats();
-renderMenu();
-renderCart();
-if (cart) {
-  cart.classList.add("open");
 }
