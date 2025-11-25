@@ -1997,12 +1997,6 @@ async function sendToKitchen(ticketText) {
 }
 
 // ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) =============
-if (checkoutBtn) {
-  checkoutBtn.addEventListener("click", async () => {
-    if (!state.cart.length) {
-      alert("Your cart is empty.");
-      return;
-    }
 
     const payText =
       state.payMethod === "cash"
