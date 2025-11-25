@@ -1979,30 +1979,22 @@ function buildKitchenTicket() {
 async function sendToKitchen(ticketText) {
   if (!ticketText || !CLOUDPRNT_ENDPOINT) return;
 
-  try {
-    const res = await fetch(CLOUDPRNT_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        // This is what the Node server expects:
-        ticket: ticketText
-      })
-    });
+  const res = await fetch(CLOUDPRNT_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ticket: ticketText,          // 👈 importante que se llame "ticket"
+      deviceId: PRINTER_DEVICE_ID  // opcional, pero útil
+    })
+  });
 
-    if (!res.ok) {
-      const msg = await res.text().catch(() => "");
-      console.error("CloudPRNT server returned an error:", msg || res.status);
-      alert("Error sending order to kitchen printer.");
-      return;
-    }
-
-    console.log("Ticket sent to CloudPRNT server.");
-  } catch (err) {
-    console.error("Error sending ticket to CloudPRNT:", err);
-    alert("Network error sending order to kitchen printer.");
+  if (!res.ok) {
+    console.error("CloudPRNT server returned an error:", await res.text());
+    throw new Error("CloudPRNT server error");
   }
-}
 
+  console.log("Ticket sent to CloudPRNT server.");
+}
 
 // ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) =============
 if (checkoutBtn) {
