@@ -1981,31 +1981,52 @@ if (printBtn) {
     w.print();
   });
 }
-
-// ============== BOTÓN CHECKOUT (ENVÍA A CLOUDPRNT + LIMPIA CARRITO) ==============
+// ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) ==============
 if (checkoutBtn) {
   checkoutBtn.addEventListener("click", async () => {
-    // 1) Validar que haya productos
+    // Si por alguna razón no hay items, no seguimos
     if (!state.items.length) {
-      alert("Tu carrito está vacío.");
+      alert("Add at least one item before checkout.");
       return;
     }
 
-    // 2) Construir ticket para cocina
-    const ticketText = buildKitchenTicket();
+    const totals = calcTotals();
 
-    // 3) Enviar al servidor CloudPRNT
-    const ok = await sendTicketToKitchen(ticketText);
-    if (!ok) {
-      // Si hubo error ya mostramos el mensaje en sendTicketToKitchen
-      return;
-    }
+    const payText =
+      state.payMethod === "cash"
+        ? "CASH"
+        : "CREDIT CARD (Visa / MasterCard / Discover / AmEx)";
 
-    // 4) Confirmación al cliente
-    alert("Orden enviada a cocina. ¡Gracias!");
+    const orderTypeText =
+      state.orderType === "delivery"
+        ? "DELIVERY (approx. 55 minutes)"
+        : "PICKUP (approx. 30 minutes)";
 
-    // 5) Limpiar carrito y refrescar la vista
-    clearCart();
+    // Construimos el ticket para la cocina
+    const ticket = buildKitchenTicket();
+
+    // Mensaje de confirmación para el cliente
+    alert(
+      `Total to pay: $${totals.total.toFixed(2)}\n` +
+        `Order type: ${orderTypeText}\n` +
+        `Payment method: ${payText}\n\n` +
+        (state.payMethod === "cash"
+          ? "Customer will pay CASH at pickup / delivery."
+          : "Customer will pay with CARD at the counter.")
+    );
+
+    // Enviamos a la impresora de cocina (CloudPRNT)
+    await sendToKitchen(ticket);
+
+    // --- Limpiar carrito y resetear estado después del checkout ---
+    state.items = [];
+    state.orderType = "pickup";
+    state.payMethod = "cash";
+    state.customerName = "";
+    state.phone = "";
+    state.comments = "";
+
+    saveState();
     renderCart();
   });
 }
