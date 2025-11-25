@@ -1933,23 +1933,34 @@ function buildKitchenTicket() {
 
   return txt;
 }
-
 // ============== SEND TO CLOUDPRNT SERVER ==============
-async function sendToKitchen(ticketText) {
-  if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) return;
+async function sendToKitchenTicket(ticketText) {
+  // Si por alguna razón no hay ticket o la URL no está definida, no hacemos nada
+  if (!ticketText || !CLOUDPRNT_ENDPOINT) {
+    console.warn("Missing ticket text or CLOUDPRNT_ENDPOINT.");
+    return;
+  }
 
   try {
     const res = await fetch(CLOUDPRNT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        deviceId: PRINTER_DEVICE_ID,
-        content: ticketText
-      })
+      // El servidor espera { ticket: "texto del ticket" }
+      body: JSON.stringify({ ticket: ticketText }),
     });
 
     if (!res.ok) {
-      console.error("CloudPRNT server returned an error:", await res.text());
+      let msg = "";
+      try {
+        msg = await res.text();
+      } catch (e) {
+        // ignore
+      }
+      console.error(
+        "CloudPRNT server returned an error:",
+        res.status,
+        msg || ""
+      );
       alert("Error sending order to kitchen printer.");
       return;
     }
@@ -1961,20 +1972,64 @@ async function sendToKitchen(ticketText) {
   }
 }
 
+// ============== LIMPIAR CARRITO Y ESTADO ==============
+function clearCartAndUI() {
+  // Estas propiedades ya existen en tu state
+  state.items = [];
+  state.orderType = "pickup";
+  state.payMethod = "cash";
+
+  renderCart();
+  renderTotals();
+}
+
 // ============== PRINT BUTTON (BROWSER + CLOUDPRNT) ==============
 if (printBtn) {
   printBtn.addEventListener("click", () => {
+    // No dejar imprimir si de verdad está vacío
+    if (!state.items.length) {
+      alert("Your cart is empty.");
+      return;
+    }
+
     const ticket = buildKitchenTicket();
 
-    // Browser print window
+    // Ventana de impresión del navegador
     const w = window.open("", "print");
     w.document.write(
       `<pre style="font:16px/1.45 monospace; white-space:pre-wrap;">${ticket}</pre>`
     );
+    w.document.close();
+    w.focus();
     w.print();
 
-    // CloudPRNT (remote kitchen)
-    sendToKitchen(ticket);
+    // Enviar a la impresora de cocina por CloudPRNT
+    sendToKitchenTicket(ticket);
+
+    // Limpiar carrito después de mandar la orden
+    clearCartAndUI();
+  });
+}
+
+// ============== CHECKOUT BUTTON (SOLO CLOUDPRNT) ==============
+if (checkoutBtn) {
+  checkoutBtn.addEventListener("click", () => {
+    // Protegernos si alguien da checkout sin productos
+    if (!state.items.length) {
+      alert("Your cart is empty.");
+      return;
+    }
+
+    const ticket = buildKitchenTicket();
+
+    // Mandar ticket al servidor CloudPRNT
+    sendToKitchenTicket(ticket);
+
+    // Mensaje al cajero / cliente
+    alert("Thank you! Order sent to the kitchen.");
+
+    // Limpiar carrito y totales
+    clearCartAndUI();
   });
 }
 
