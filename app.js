@@ -1934,8 +1934,8 @@ function buildKitchenTicket() {
 
 // ============== SEND TO CLOUDPRNT SERVER ==============
 async function sendToKitchen(ticketText) {
-  if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) {
-    console.error("Missing ticket text, endpoint, or PRINTER_DEVICE_ID.");
+  if (!ticketText || !CLOUDPRNT_ENDPOINT) {
+    console.error("Missing ticket text or CLOUDPRNT_ENDPOINT.");
     return false;
   }
 
@@ -1944,8 +1944,7 @@ async function sendToKitchen(ticketText) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        deviceId: PRINTER_DEVICE_ID,
-        content: ticketText
+        ticket: ticketText     // 👈 ESTE es el cambio importante
       })
     });
 
