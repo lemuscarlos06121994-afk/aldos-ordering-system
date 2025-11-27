@@ -1933,14 +1933,10 @@ function buildKitchenTicket() {
 
   return txt;
 }
-// =================== CLOUDPRNT CONFIG ===================
-const CLOUDPRNT_ENDPOINT =
-  "https://aldos-cloudprnt-server-1.onrender.com/submit";
-// Por ahora no necesitamos deviceId porque el servidor no lo pide.
 
 // ============== SEND TO CLOUDPRNT SERVER ==============
 async function sendToKitchen(ticketText) {
-  if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) return false;
+  if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) return;
 
   try {
     const res = await fetch(CLOUDPRNT_ENDPOINT, {
@@ -1955,47 +1951,46 @@ async function sendToKitchen(ticketText) {
     if (!res.ok) {
       console.error("CloudPRNT server returned an error:", await res.text());
       alert("Error sending order to kitchen printer.");
-      return false;
+      return;
     }
 
-    console.log("✅ Ticket sent to CloudPRNT server.");
-    return true;
+    console.log("Ticket sent to CloudPRNT server.");
   } catch (err) {
     console.error("Error sending ticket to CloudPRNT:", err);
     alert("Network error sending order to kitchen printer.");
-    return false;
   }
 }
 
-// ============== BOTÓN PRINT (SÓLO IMPRESORA LOCAL DEL NAVEGADOR) ==============
+// ============== PRINT BUTTON (BROWSER + CLOUDPRNT) ==============
 if (printBtn) {
   printBtn.addEventListener("click", () => {
     const ticket = buildKitchenTicket();
 
-    // Ventana de impresión del navegador
+    // Browser print window
     const w = window.open("", "print");
     w.document.write(
       `<pre style="font:16px/1.45 monospace; white-space:pre-wrap;">${ticket}</pre>`
     );
     w.print();
+
+    // CloudPRNT (remote kitchen)
+    sendToKitchen(ticket);
   });
 }
+
 // ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) ==============
 if (checkoutBtn) {
-  checkoutBtn.addEventListener("click", async () => {
-    // 1) Texto de pago
+  checkoutBtn.addEventListener("click", () => {
     const payText =
       state.payMethod === "cash"
         ? "CASH"
         : "CREDIT CARD (Visa / MasterCard / Discover / AmEx)";
 
-    // 2) Tipo de orden
     const orderTypeText =
       state.orderType === "delivery"
         ? "DELIVERY (approx. 55 minutes)"
         : "PICKUP (approx. 30 minutes)";
 
-    // 3) Resumen que ves en el popup
     let msg =
       `Total to pay: ${totalEl.textContent}\n` +
       `Order type: ${orderTypeText}\n` +
@@ -2019,16 +2014,57 @@ if (checkoutBtn) {
 
     alert(msg);
 
-    // 4) Construir ticket de cocina
+    // Send to kitchen via CloudPRNT
     const ticket = buildKitchenTicket();
-
-    // 5) Mandar al servidor CloudPRNT
-    const ok = await sendToKitchen(ticket);
-
-    // 6) Si todo salió bien, vaciar carrito
-    if (ok) {
-      state.cart = {};
-      renderCart();
-    }
+    sendToKitchen(ticket);
   });
+}
+
+// ============== TOGGLE TOPPINGS (click again to undo) ==============
+document.addEventListener("click", e => {
+  const input = e.target;
+
+  if (
+    input &&
+    input.tagName === "INPUT" &&
+    input.type === "radio" &&
+    input.name &&
+    input.name.startsWith("top-")
+  ) {
+    if (input.dataset.wasChecked === "true") {
+      input.checked = false;
+      input.dataset.wasChecked = "false";
+      return;
+    }
+
+    const groupName = input.name;
+    document
+      .querySelectorAll(`input[name="${groupName}"]`)
+      .forEach(r => (r.dataset.wasChecked = "false"));
+
+    input.dataset.wasChecked = "true";
+  }
+});
+
+// ============== CART TOGGLE (MOBILE) ==============
+if (cartToggle && cart) {
+  cartToggle.addEventListener("click", () => {
+    cart.classList.toggle("open");
+  });
+}
+
+// ============== EMPTY CART BUTTON ==============
+if (emptyBtn) {
+  emptyBtn.addEventListener("click", () => {
+    state.cart = {};
+    renderCart();
+  });
+}
+
+// ============== INIT ==============
+renderCats();
+renderMenu();
+renderCart();
+if (cart) {
+  cart.classList.add("open");
 }
