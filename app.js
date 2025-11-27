@@ -1,8 +1,7 @@
 // =================== CLOUDPRNT CONFIG ===================
-// ⚠️ IMPORTANT:
-// 1) Replace CLOUDPRNT_ENDPOINT with your REAL Render URL (the one you put in the printer, + "/order")
-//    Example: "https://aldos-cloudprnt.onrender.com/cloudprnt/order"
-// 2) Replace PRINTER_DEVICE_ID with the Device ID shown in the printer CloudPRNT status page.
+// IMPORTANT:
+// 1) CLOUDPRNT_ENDPOINT must be your Render backend URL + "/submit"
+// 2) PRINTER_DEVICE_ID must match the Device ID shown in the printer CloudPRNT status.
 const CLOUDPRNT_ENDPOINT = "https://aldos-printcore-server-1.onrender.com/submit";
 const PRINTER_DEVICE_ID = "z2q6dwp2hagm";
 
@@ -899,7 +898,6 @@ function renderMenu() {
       });
 
     body.appendChild(frag);
-    wrap.appendChild(head);
     wrap.appendChild(body);
     menuEl.appendChild(wrap);
 
@@ -1936,7 +1934,10 @@ function buildKitchenTicket() {
 
 // ============== SEND TO CLOUDPRNT SERVER ==============
 async function sendToKitchen(ticketText) {
-  if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) return;
+  if (!ticketText || !CLOUDPRNT_ENDPOINT || !PRINTER_DEVICE_ID) {
+    console.error("Missing ticket text, endpoint, or PRINTER_DEVICE_ID.");
+    return false;
+  }
 
   try {
     const res = await fetch(CLOUDPRNT_ENDPOINT, {
@@ -1949,15 +1950,18 @@ async function sendToKitchen(ticketText) {
     });
 
     if (!res.ok) {
-      console.error("CloudPRNT server returned an error:", await res.text());
+      const errText = await res.text().catch(() => "");
+      console.error("CloudPRNT server returned an error:", errText || res.status);
       alert("Error sending order to kitchen printer.");
-      return;
+      return false;
     }
 
-    console.log("Ticket sent to CloudPRNT server.");
+    console.log("✅ Ticket sent to CloudPRNT server.");
+    return true;
   } catch (err) {
     console.error("Error sending ticket to CloudPRNT:", err);
     alert("Network error sending order to kitchen printer.");
+    return false;
   }
 }
 
@@ -1973,14 +1977,14 @@ if (printBtn) {
     );
     w.print();
 
-    // CloudPRNT (remote kitchen)
+    // Also send to kitchen
     sendToKitchen(ticket);
   });
 }
 
 // ============== CHECKOUT BUTTON (SUMMARY + CLOUDPRNT) ==============
 if (checkoutBtn) {
-  checkoutBtn.addEventListener("click", () => {
+  checkoutBtn.addEventListener("click", async () => {
     const payText =
       state.payMethod === "cash"
         ? "CASH"
@@ -2014,9 +2018,14 @@ if (checkoutBtn) {
 
     alert(msg);
 
-    // Send to kitchen via CloudPRNT
     const ticket = buildKitchenTicket();
-    sendToKitchen(ticket);
+    const ok = await sendToKitchen(ticket);
+
+    if (ok) {
+      // Clear cart only if the ticket was successfully sent
+      state.cart = {};
+      renderCart();
+    }
   });
 }
 
